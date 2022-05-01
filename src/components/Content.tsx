@@ -1,9 +1,10 @@
+import React from "react";
 import { MovieCard } from "./MovieCard";
 
 interface ContentProps {
   selectedGenre: {
     id: number;
-    name: 'action' | 'comedy' | 'documentary' | 'drama' | 'horror' | 'family';
+    name: "action" | "comedy" | "documentary" | "drama" | "horror" | "family";
     title: string;
   };
 
@@ -19,20 +20,34 @@ interface ContentProps {
   }>;
 }
 
-export function Content({ selectedGenre, movies }: ContentProps) {
+export const Content = React.memo(({ selectedGenre, movies }: ContentProps) => {
+  const moviesMemo = React.useMemo(
+    () =>
+      movies.map((movie) => {
+        return (
+          <MovieCard
+            key={movie.imdbID}
+            title={movie.Title}
+            poster={movie.Poster}
+            runtime={movie.Runtime}
+            rating={movie.Ratings[0].Value}
+          />
+        );
+      }),
+    [movies]
+  );
+
   return (
     <div className="container">
       <header>
-        <span className="category">Categoria:<span> {selectedGenre.title}</span></span>
+        <span className="category">
+          Categoria:<span> {selectedGenre.title}</span>
+        </span>
       </header>
 
       <main>
-        <div className="movies-list">
-          {movies.map(movie => (
-            <MovieCard key={movie.imdbID} title={movie.Title} poster={movie.Poster} runtime={movie.Runtime} rating={movie.Ratings[0].Value} />
-          ))}
-        </div>
+        <div className="movies-list">{moviesMemo}</div>
       </main>
     </div>
-  )
-}
+  );
+});
